@@ -7,6 +7,7 @@ import { useMemo } from 'react'
 import { signOut } from 'next-auth/react'
 
 
+//REVIEW: why a hook? why not just a function?
 
 const useRoutes = () => {
 

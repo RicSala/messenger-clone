@@ -4,7 +4,6 @@ import clsx from "clsx";
 import Link from "next/link";
 
 const MobileItem = ({
-    key,
     href,
     active,
     icon: Icon,

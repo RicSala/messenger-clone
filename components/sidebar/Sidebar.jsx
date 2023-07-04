@@ -1,10 +1,13 @@
+import getCurrentUser from "@/actions/getCurrentUser";
 import DesktopSidebar from "./DesktopSidebar";
 import MobileFooter from "./MobileFotter";
 
-const Siderbar = ({ children }) => {
+const Sidebar = async ({ children }) => {
+
+    const currentUser = await getCurrentUser()
     return (
         <div className="h-full">
-            <DesktopSidebar />
+            <DesktopSidebar currentUser={currentUser} />
             <MobileFooter />
             <main className="lg:pl-20 h-full">
                 {children}
@@ -12,4 +15,4 @@ const Siderbar = ({ children }) => {
         </div>
     )
 };
-export default Siderbar;
+export default Sidebar;

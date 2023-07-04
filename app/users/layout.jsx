@@ -1,13 +1,18 @@
-import Siderbar from "@/components/sidebar/Siderbar";
+import getUsers from "@/actions/getUsers";
+import Sidebar from "@/components/sidebar/Sidebar";
+import UserList from "./components/UserList";
 
 export default async function UsersLayout({
     children,
 }) {
+
+    const users = await getUsers()
     return (
-        <div className="h-full">
-            <Siderbar>
+        <Sidebar>
+            <div className="h-full">
+                <UserList items={users} />
                 {children}
-            </Siderbar>
-        </div>
+            </div>
+        </Sidebar>
     )
 }

@@ -3,11 +3,16 @@
 import useRoutes from "@/hooks/useRoutes";
 import { useState } from "react";
 import DesktopItem from "./DesktopItem";
+import Avatar from "../Avatar";
 
-const DesktopSidebar = ({ children }) => {
+const DesktopSidebar = ({
+    currentUser
+}) => {
 
     const routes = useRoutes()
     const [isOpen, setIsOpen] = useState(false)
+
+    console.log("CURRENT USER", currentUser)
 
     return (
         <div className="
@@ -48,6 +53,26 @@ const DesktopSidebar = ({ children }) => {
                         />))}
 
                 </ul>
+
+            </nav>
+            <nav className="
+            flex
+            flex-col
+            justify-between
+            mt-4
+            items-center
+            ">
+                <div
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="
+            cursor-pointer
+            hover:opacity-75
+            transition
+            ">
+                    <Avatar
+                        user={currentUser}
+                    />
+                </div>
 
             </nav>
         </div>
