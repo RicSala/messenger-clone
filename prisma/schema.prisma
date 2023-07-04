@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_URL")
+}
+
+// A user can have: many conversations, many seenmessages, many accounts, many messages
+model User {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  // name type decorator defaultauto map-to-mongo-_id ??
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // RELAIONS
+  // many to many: a user can be in many conversations, a conversation can have many users
+  conversationIds String[]       @db.ObjectId // It's an array of strings and each string is a valid ObjectId
+  conversations   Conversation[] @relation(fields: [conversationIds], references: [id])
+
+  seenMessageIds String[]  @db.ObjectId
+  seenMessages   Message[] @relation("Seen", fields: [seenMessageIds], references: [id])
+
+  // one to many: a user can have many accounts, an account can only have one user
+  // REVIEW:  In this scenario, the IDs of accounts and messages are not explicitly included in the User model because 
+  // the relationships can be resolved by referencing the User model from the Account and Message models. Prisma will 
+  // automatically generate the necessary foreign key relationships in the database schema based on the defined relationships in the Prisma model.
+  accounts Account[]
+  messages Message[]
+}
+
+// an account can only have one user
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String // REVIEW:  what is the db.String decorator for?
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  // RELATIONS
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId]) // the combination of provider and providerAccountId must be unique
+}
+
+// a conversation can have many users, many messages
+model Conversation {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime @default(now())
+  lastMessageAt DateTime @updatedAt
+  name          String?
+  isGroup       Boolean?
+
+  // RELATIONS
+  messagesIds String[]  @db.ObjectId
+  messages    Message[] //REVIEW: why not using this here? -> @relation(fields: [messagesIds], references: [id])
+
+  userIds String[] @db.ObjectId
+  users   User[]   @relation(fields: [userIds], references: [id]) // REVIEW: but we do use it here?
+}
+
+// a message can have many seenBy, one conversation, one sender
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  body      String?
+  image     String?
+  createdAt DateTime @default(now())
+
+  // RELATIONS
+  seenIds String[] @db.ObjectId
+  seenBy  User[]   @relation("Seen", fields: [seenIds], references: [id])
+
+  conversationId String       @db.ObjectId
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  senderId String @db.ObjectId
+  sender   User   @relation(fields: [senderId], references: [id])
+}
