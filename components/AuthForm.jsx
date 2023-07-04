@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Button from "./Button";
 import AuthSocialButton from "./AuthSocialButton";
@@ -8,13 +8,23 @@ import { BsGithub } from "react-icons/bs";
 import { BsGoogle } from "react-icons/bs";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { signIn } from "next-auth/react";
-import Input from "./Input";
+import { signIn, useSession } from "next-auth/react";
+import Input from "./inputs/Input";
+import { useRouter } from "next/navigation";
 
 // Variant type definition just for reference
 // type Variant = 'LOGIN' | 'REGISTER'
 
 const AuthForm = (props) => {
+
+    const session = useSession()
+    const router = useRouter()
+
+    useEffect(() => {
+        if (session?.status === 'authenticated') {
+            router.push('/users')
+        }
+    }, [router, session?.status])
 
     const [variant, setVariant] = useState('LOGIN')
     const [isLoading, setIsLoading] = useState(false)
@@ -42,6 +52,7 @@ const AuthForm = (props) => {
             await axios.post('/api/register', data)
                 .then((response) => {
                     toast.success("User created")
+                    signIn('credentials', data)
                 })
                 .catch((error) => {
                     toast.error("Something went wrong")
@@ -67,6 +78,7 @@ const AuthForm = (props) => {
                 })
                 .finally(() => {
                     setIsLoading(false)
+                    router.push('/users')
                 })
         }
     }
