@@ -6,10 +6,10 @@ const useConversation = () => {
 
     // We memoize the conversationId so that it doesn't change every time the component re-renders
     const conversationId = useMemo(() => {
-        if (!params?.conversationId) return ''
+        if (!params?.conversationID) return ''
 
-        return params.conversationId
-    }, [params?.conversationId]);
+        return params.conversationID
+    }, [params.conversationID]);
 
     //REVIEW: Do we really need this? We have already memorize the conversationId
     const isOpen = useMemo(() => {

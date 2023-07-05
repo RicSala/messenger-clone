@@ -10,23 +10,24 @@ export async function POST(req) {
         const body = await req.json()
 
         const {
+            // for individual chat
             userId,
 
-            // for the future
+            // for group chat
             isGroup,
-            members,
+            members, //members are ids, not total users
             name, // of the groupchat
         } = body
 
-        if (!currentUser?.id || !currentUser?.email) {
+        if (!currentUser?.id || !currentUser?.email) { // if the user is not logged in
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        if (isGroup && (!members || members.length < 2 || !name)) {
+        if (isGroup && (!members || members.length < 2 || !name)) { // if the user is trying to create a group chat but the data is invalid
             return NextResponse.json({ error: "Invalid data" }, { status: 400 })
         }
 
-        if (isGroup) {
+        if (isGroup) { // if group chat and valid data
             const newConversation = await prisma.conversation.create({
                 data: {
                     name,
@@ -34,7 +35,7 @@ export async function POST(req) {
                     users: {
                         connect: [ // connect the members and the current user to the new conversation
                             ...members.map((member) => ({
-                                id: member.value
+                                id: member.value // REVIEW: why value?
                             })),
                             { id: currentUser.id }
                         ]
@@ -48,6 +49,7 @@ export async function POST(req) {
             return NextResponse.json(newConversation)
         }
 
+        // If individual chat -> let's check if there is already a conversation between the two users
         const existingConversations = await prisma.conversation.findMany({ //why findMany? because the query we are gonna use only supports findMany
             where: {
                 OR: [
@@ -71,6 +73,7 @@ export async function POST(req) {
             return NextResponse.json(singleConversation)
         }
 
+        // individual chat and no existing conversation -> create a new one
         const newConversation = await prisma.conversation.create({
             data: {
                 isGroup: false,
