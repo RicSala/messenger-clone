@@ -25,7 +25,7 @@ const ConversationPage = async ({ params }) => {
         <div className="lg:pl-80 h-full">
             <div className="h-full flex flex-col">
                 <Header conversation={conversation} />
-                <Body messages={messages} />
+                <Body initialMessages={messages} />
                 <Form />
             </div>
         </div>

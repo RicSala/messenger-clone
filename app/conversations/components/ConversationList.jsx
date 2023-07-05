@@ -13,7 +13,6 @@ const ConversationList = ({
 
     const [items, setItems] = useState(initialItems)
 
-    console.log('items', items)
     const router = useRouter()
 
     const { conversationId, isOpen } = useConversation()

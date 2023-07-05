@@ -27,8 +27,10 @@ const ConversationBox = ({
     }, [data?.messages])
 
     const userEmail = useMemo(() => {
-        return session?.user?.email
-    }, [session?.user?.email])
+        return session?.data?.user?.email
+    }, [session?.data?.user?.email])
+
+    console.log("LAST", lastMessage)
 
     const hasSeen = useMemo(() => {
 
@@ -40,11 +42,15 @@ const ConversationBox = ({
         //what if the last message is from the current user?
         // if (lastMessage.user.email === userEmail) return false
 
-        const seenArray = lastMessage.seen || []
+        const seenArray = lastMessage.seenBy || []
+        console.log("SEEN ARRAY", seenArray)
 
-        return seenArray.includes(userEmail)
+        return seenArray
+            .filter((user) => user.email === userEmail).length !== 0;
+    }, [userEmail, lastMessage]);
 
-    }, [lastMessage, userEmail])
+    console.log("HAS SEEN", hasSeen)
+    console.log("USER EMAIL", userEmail)
 
 
     const lastMessageText = useMemo(() => {

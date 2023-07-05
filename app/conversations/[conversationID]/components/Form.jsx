@@ -5,6 +5,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { HiPaperAirplane, HiPhoto } from "react-icons/hi2";
 import MessageInput from "./MessageInput";
+import { CldUploadButton } from "next-cloudinary";
 
 const Form = ({
     // conversation //REVIEW: why getting again the conversation instead of passing it from the page?
@@ -28,6 +29,13 @@ const Form = ({
         axios.post(`/api/messages`, { ...data, conversationId })
     }
 
+    const handleUpload = (res) => {
+        axios.post(`/api/messages`, {
+            image: res.info.secure_url,
+            conversationId
+        })
+    }
+
 
 
     return (
@@ -42,7 +50,14 @@ const Form = ({
         lg:gap-4
         w-full
         ">
-            <HiPhoto size={30} className="text-sky-500" />
+            <CldUploadButton
+                options={{ maxFiles: 1 }}
+                onUpload={(res) => { handleUpload(res) }}
+                uploadPreset="euavxfr2"
+            >
+                <HiPhoto size={30} className="text-sky-500" />
+
+            </CldUploadButton>
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="

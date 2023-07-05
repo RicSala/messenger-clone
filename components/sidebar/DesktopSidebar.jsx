@@ -12,7 +12,6 @@ const DesktopSidebar = ({
     const routes = useRoutes()
     const [isOpen, setIsOpen] = useState(false)
 
-    console.log("CURRENT USER", currentUser)
 
     return (
         <div className="
